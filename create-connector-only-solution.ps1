@@ -51,7 +51,11 @@ function Add-SolutionComponent ($ObjectId, $SolutionUniqueName) {
     Invoke-DataverseHttpPost $token $tokenInfo.dataverseHost 'AddSolutionComponent' $body
 }
 
+# Get the solution we want to base the temporary solution with connectors only on
 $solution = Get-Solution $solutionUniqueName
+
+# Check to see if the temp solution is still in the dev environment.
+# If it is, remove it.
 $tempSolutionUniqueName = $solutionUniqueName + '_connector_temp'
 
 $tempSolution = Get-Solution $tempSolutionUniqueName
@@ -60,15 +64,26 @@ if ($null -ne $tempSolution) {
     Remove-Solution $tempSolution.solutionid
 }
 
+# Create the temp solution using the same publisher as the solution we are basing the temp solution on
 New-Solution $tempSolutionUniqueName $solution._publisherid_value
 
+# Get the custom connectors in the solution we are basing the temp solution on
 $components = Get-CustomConnectorComponents $solution.solutionid
 
+# Add the custom connectors to the temp solution, ensuring we add the required components for the connector
 foreach ($component in $components.value) {
     $component = Add-SolutionComponent $component.objectid $tempSolutionUniqueName
 }
 
+# Export the solution as managed so we can import it for the first time
+# into the target environment so the connectors will be available to create a connection
 pac solution export --name $tempSolutionUniqueName --path ./$tempSolutionUniqueName.zip --managed true --overwrite true
 
+# Delete temp solution from dev environment so we dont' have an unnecessary solution in the dev environment
 $tempSolution = Get-Solution $tempSolutionUniqueName
 Remove-Solution $tempSolution.solutionid
+
+# Import the solution into the target environment
+# Create the connection (must be manual for oauth connections where the token represents an interactive user)
+# Once we have a connection in the target environment we can import the "full" solution and reference the connection during import
+# Once the "full" solution is imported in the target environment we can delete the temp solution so we don't have n unnecessary solution in the target environment
