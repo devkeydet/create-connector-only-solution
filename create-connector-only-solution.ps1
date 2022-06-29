@@ -16,11 +16,14 @@ function Get-Solution ($UniqueName) {
 }
 
 function New-Solution ($UniqueName, $PublisherId) {
-    $body = "{
-        `n    `"uniquename`": `"$UniqueName`",
-        `n    `"friendlyname`": `"$UniqueName`",
-        `n    `"publisherid@odata.bind`": `"publishers($PublisherId)`"
-        `n}"
+    $body = 
+@"
+{
+    "uniquename": "$UniqueName",
+    "friendlyname": "$UniqueName",
+    "publisherid@odata.bind": "publishers($PublisherId)"
+}
+"@
 
     Invoke-DataverseHttpPost $token $tokenInfo.dataverseHost 'solutions' $body
 }
@@ -36,12 +39,14 @@ function Get-CustomConnectorComponents ($SolutionId) {
 }
 
 function Add-SolutionComponent ($ObjectId, $SolutionUniqueName) {
-    $body = "{
-        `n    `"ComponentId`": `"$ObjectId`",
-        `n    `"AddRequiredComponents`": true,
-        `n    `"ComponentType`": 372,
-        `n    `"SolutionUniqueName`":`"$SolutionUniqueName`"
-        `n}"
+    $bodyObject = @{
+        ComponentId = $ObjectId
+        AddRequiredComponents = $true
+        ComponentType = 372
+        SolutionUniqueName = $SolutionUniqueName
+    }
+
+    $body = ConvertTo-Json $bodyObject
 
     Invoke-DataverseHttpPost $token $tokenInfo.dataverseHost 'AddSolutionComponent' $body
 }
@@ -64,3 +69,6 @@ foreach ($component in $components.value) {
 }
 
 pac solution export --name $tempSolutionUniqueName --path ./$tempSolutionUniqueName.zip --managed true --overwrite true
+
+$tempSolution = Get-Solution $tempSolutionUniqueName
+Remove-Solution $tempSolution.solutionid
