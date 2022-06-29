@@ -45,3 +45,10 @@ function Invoke-DataverseHttpPost ($token, $dataverseHost, $requestUrlRemainder,
     $response = Invoke-RestMethod $requestUrl -Method 'POST' -Headers $headers -Body $body
     return $response
 }
+
+function Invoke-DataverseHttpDelete ($token, $dataverseHost, $requestUrlRemainder) {
+    $headers = Set-DefaultHeaders $token
+    $requestUrl = Set-RequestUrl $dataverseHost $requestUrlRemainder
+    $response = Invoke-RestMethod $requestUrl -Method 'DELETE' -Headers $headers
+    return $response
+}
