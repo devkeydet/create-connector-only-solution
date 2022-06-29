@@ -1,14 +1,12 @@
 # NOTE: Set $tokenInfo before running this script
-#       One way would be something like the follwing:
+#       One way would be something like the following (which is what I do):
 #
 #       $tokenInfo = Get-Secret -Name secret-name -AsPlainText
 
-# Load the PowerShell File we depend on
+# Load the PowerShell file containing the helper functions
 . ./dataverse-webapi-functions.ps1
 
 $token = Get-SpnToken $tokenInfo.tenantId $tokenInfo.clientId $tokenInfo.clientSecret $tokenInfo.dataverseHost $tokenInfo.aadHost
-
-
 
 function Get-Solution ($UniqueName) {
     $requestUrlRemainder = 'solutions?$filter=uniquename eq ' + "'" + $UniqueName + "'" + '&$select=solutionid,_publisherid_value'
