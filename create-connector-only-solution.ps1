@@ -1,7 +1,8 @@
 # NOTE: Set $tokenInfo & $solutionUniqueName before running this script
 #       One way would be something like the following (which is what I do):
-#
-#       $tokenInfo = Get-Secret -Name secret-name -AsPlainText
+#       
+#       $solutionUniqueName = "NameOfUnamangedSolutionToBaseConnetorOnlySolutionOn";
+#       $tokenInfo = Get-Secret -Name secret-name -AsPlainText # where secret is an object with the structure below 
 
 # Load the PowerShell file containing the helper functions
 . ./dataverse-webapi-functions.ps1
