@@ -1,4 +1,4 @@
-# NOTE: Set $tokenInfo before running this script
+# NOTE: Set $tokenInfo & $solutionUniqueName before running this script
 #       One way would be something like the following (which is what I do):
 #
 #       $tokenInfo = Get-Secret -Name secret-name -AsPlainText
@@ -45,8 +45,7 @@ function Add-SolutionComponent ($ObjectId, $SolutionUniqueName) {
     Invoke-DataverseHttpPost $token $tokenInfo.dataverseHost 'AddSolutionComponent' $body
 }
 
-$solutionUniqueName = 'UseCustomConnectorInSolution'
-$solution = Get-Solution 'UseCustomConnectorInSolution'
+$solution = Get-Solution $solutionUniqueName
 $tempSolutionUniqueName = $solutionUniqueName + '_connector_temp'
 
 $tempSolution = Get-Solution $tempSolutionUniqueName
